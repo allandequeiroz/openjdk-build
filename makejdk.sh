@@ -44,7 +44,7 @@ while [[ $# -gt 0 ]] && [[ ."$1" = .-* ]] ; do
   case "$opt" in
     "--" ) break 2;;
 
-    "--shiftource" | "-s" )
+    "--source" | "-s" )
     WORKING_DIR="$1"; shift;;
 
     "--ssh" | "-S" )

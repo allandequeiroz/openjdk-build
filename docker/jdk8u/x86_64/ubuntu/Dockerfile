@@ -42,14 +42,14 @@ RUN apt-get update \
 # Pick up build instructions
 RUN mkdir -p /openjdk/jdk8u
 
-COPY build.sh /bin/
-COPY jtreg.sh /bin/
+#COPY build.sh /bin/
+#COPY jtreg.sh /bin/
 
 WORKDIR /openjdk/jdk8u/
 
 ENV JDK_BOOT_DIR=/usr/lib/jvm/java-1.7.0-openjdk-amd64
 
 # Default actions
-ENTRYPOINT ["build.sh"]
+#ENTRYPOINT ["build.sh"]
 
-CMD ["images"]
+#CMD ["images"]

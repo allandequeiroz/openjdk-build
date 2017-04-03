@@ -44,7 +44,7 @@ while [[ $# -gt 0 ]] && [[ ."$1" = .-* ]] ; do
   case "$opt" in
     "--" ) break 2;;
 
-    "--source" | "-s" )
+    "--shiftource" | "-s" )
     WORKING_DIR="$1"; shift;;
 
     "--ssh" | "-S" )
@@ -175,10 +175,10 @@ if [ "${USE_DOCKER}" ] ; then
      echo $normal
   fi
 
-  docker run --privileged -t -v $WORKING_DIR/openjdk:/openjdk/jdk8u/openjdk --entrypoint build.sh $CONTAINER
+  docker run --privileged -t -v $WORKING_DIR/openjdk:/openjdk/jdk8u -v $WORKING_DIR/sbin:/bin  --entrypoint build.sh $CONTAINER
 
   if [[ ! -z $JTREG ]]; then
-    docker run --privileged -t -v $WORKING_DIR/openjdk:/openjdk/jdk8u/openjdk --entrypoint jtreg.sh $CONTAINER
+    docker run --privileged -t -v $WORKING_DIR/openjdk:/openjdk/jdk8u -v $WORKING_DIR/sbin:/bin --entrypoint jtreg.sh $CONTAINER
   fi
 
   CONTAINER_ID=$(docker ps -a | awk '{ print $1,$2 }' | grep openjdk_container | awk '{print $1 }'| head -1)
@@ -190,8 +190,8 @@ if [ "${USE_DOCKER}" ] ; then
 
   if [[ ${JTREG} == true ]] ; then
     echo "Copying jtreg reports from docker"
-    docker cp $CONTAINER_ID:/openjdk/jdk8u/jtreport.zip $TARGET_DIR
-    docker cp $CONTAINER_ID:/openjdk/jdk8u/jtwork.zip $TARGET_DIR
+    #docker cp $CONTAINER_ID:/openjdk/jdk8u/jtreport.zip $TARGET_DIR
+    #docker cp $CONTAINER_ID:/openjdk/jdk8u/jtwork.zip $TARGET_DIR
   fi
 
   # Didn't specify to keep

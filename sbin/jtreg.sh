@@ -17,7 +17,7 @@ WORKING_DIR=$1
 
 if [[ -f /.dockerenv ]] ; then
   echo "Detected we're in docker"
-  WORKING_DIR=/openjdk/jdk8u/openjdk
+  WORKING_DIR=/openjdk/jdk8u
   # Keep as a variable for potential use later
   # if we wish to copy the results to the host
   IN_DOCKER=true
@@ -53,9 +53,21 @@ export JT_HOME=$WORKING_DIR/jtreg
 # Clean up after ourselves by removing jtreg tgz
 rm -f jtreg*.tar.gz
 
-echo "Running jtreg with: jtreg -conc:2 -a -verbose:fail -jdk:$PRODUCT_HOME ./ || true"
+#echo "Running jtreg with: jtreg -conc:2 -a -verbose:fail -jdk:$PRODUCT_HOME ./ || true"
 
-jtreg -agentvm -conc:2 -a -verbose:fail -jdk:$PRODUCT_HOME ./ || true
+echo "Apply JCov settings to Makefile..." 
+cd $WORKING_DIR/jdk/test
+pwd
+
+sed -i 's/-vmoption:-Xmx512m.*/-vmoption:-Xmx512m -jcov\/classes:$(ABS_PLATFORM_BUILD_ROOT)\/jdk\/classes\/  -jcov\/source:$(ABS_PLATFORM_BUILD_ROOT)\/..\/..\/jdk\/src\/java\/share\/classes  -jcov\/include:*/' Makefile
+ 
+# This is the JDK we'll test
+export PRODUCT_HOME=$WORKING_DIR/build/linux-cx86_64-normal-server-release/images/j2sdk-image
+cd $WORKING_DIR
+
+make test jobs=10
+
+#jtreg -agentvm -conc:2 -a -verbose:fail -jdk:$PRODUCT_HOME ./ || true
 
 if [ $? -ne 0 ]; then
   echo "Failed to run jtreg, exiting"
@@ -64,7 +76,7 @@ fi
 
 echo "Archiving your jtreg results"
 
-zip -r jtreport.zip ./JTreport
-zip -r jtwork.zip ./JTwork
+#zip -r jtreport.zip ./JTreport
+#zip -r jtwork.zip ./JTwork
 
-mv *.zip $WORKING_DIR/
+#mv *.zip $WORKING_DIR/
